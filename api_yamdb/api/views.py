@@ -1,6 +1,6 @@
 from django.core.mail import EmailMessage
 
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -8,7 +8,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.contrib.auth.tokens import default_token_generator
 
-from .serializers import CreateTokenSerializer, SignUpSerializer
+from reviews.models import Comment, Review
+from .serializers import CreateTokenSerializer, SignUpSerializer, CommentSerializer, ReviewSerializer
 
 
 def send_email(user, code):
@@ -18,6 +19,16 @@ def send_email(user, code):
         to=(user.email,)
     )
     email.send()
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
 
 @api_view(['POST'])

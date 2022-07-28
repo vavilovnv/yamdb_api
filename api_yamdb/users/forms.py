@@ -1,7 +1,11 @@
+from django.contrib.auth import get_user_model
+
 from django.forms import ModelForm
 
-from .models import CustomUser
+User = get_user_model()
 
 
 class UserForm(ModelForm):
-    model = CustomUser
+    """Форма для модели CustomUser."""
+
+    model = User

@@ -1,8 +1,11 @@
+from django.contrib.auth import get_user_model
+
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
+
 from reviews.models import Comment, Review
 
-from users.models import CustomUser
+User = get_user_model()
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -10,8 +13,8 @@ class CommentSerializer(serializers.ModelSerializer):
     review = SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
-        fields = '__all__'
         model = Comment
+        fields = '__all__'
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -19,26 +22,37 @@ class ReviewSerializer(serializers.ModelSerializer):
     title = SlugRelatedField(slug_field='name', read_only=True)
 
     class Meta:
-        fields = '__all__'
         model = Review
+        fields = '__all__'
 
 
-class SignUpSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор модели CustomUser."""
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = (
-            'email',
             'username',
+            'first_name',
+            'last_name',
+            'email',
+            'role',
+            'bio',
         )
 
 
-class CreateTokenSerializer(serializers.ModelSerializer):
-    confirmation_code = serializers.CharField(required=True)
+class UserSerializerReadOnly(serializers.ModelSerializer):
+    """Сериализатор модели CustomUser (чтение)."""
+
+    role = serializers.CharField(read_only=True)
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = (
             'username',
-            'confirmation_code',
+            'first_name',
+            'last_name',
+            'email',
+            'role',
+            'bio',
         )

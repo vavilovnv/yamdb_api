@@ -1,22 +1,28 @@
-from api.views import ReviewViewSet
 from django.urls import include, path
-from rest_framework.routers import SimpleRouter
+from rest_framework.routers import DefaultRouter
 
-v1_router = SimpleRouter()
+from api.views import ReviewViewSet
+from users.views import UsersViewSet
+from .views import signup, create_token
+
+router_v1 = DefaultRouter()
 
 # http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/
 # http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/
-v1_router.register('titles/(?P<titles_id>\\d+)/reviews', ReviewViewSet,
+router_v1.register('titles/(?P<titles_id>\\d+)/reviews', ReviewViewSet,
                    basename='reviews')
 
 # http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/
 # http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/
-v1_router.register(
+router_v1.register(
     'titles/(?P<titles_id>\\d+)/reviews/(?P<review_id>\\d+)/comments',
     ReviewViewSet,
     basename='reviews'
 )
+router_v1.register('users', UsersViewSet, basename='users')
 
 urlpatterns = [
-    path('v1/', include(v1_router.urls)),
+    path('v1/auth/signup/', signup, name='signup'),
+    path('v1/auth/token/', create_token, name='token'),
+    path('v1/', include(router_v1.urls)),
 ]

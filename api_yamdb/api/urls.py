@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import ReviewViewSet, UsersViewSet, signup_user, create_token
 
+
 router_v1 = DefaultRouter()
 
 # http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/

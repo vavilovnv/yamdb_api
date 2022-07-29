@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import status, viewsets, filters
 from rest_framework.decorators import api_view, action
+
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -34,6 +35,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class UsersViewSet(viewsets.ModelViewSet):
     """API для работы пользователями."""
+
 
     queryset = User.objects.all().order_by('username')
     serializer_class = UserSerializer
@@ -92,6 +94,16 @@ def response_400(fields, data):
         ))},
         status=status.HTTP_400_BAD_REQUEST
     )
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
 
 @api_view(['POST'])

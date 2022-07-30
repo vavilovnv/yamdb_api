@@ -36,6 +36,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class UsersViewSet(viewsets.ModelViewSet):
     """API для работы пользователями."""
 
+
     queryset = User.objects.all().order_by('username')
     serializer_class = UserSerializer
     permission_classes = (AdminPermission,)

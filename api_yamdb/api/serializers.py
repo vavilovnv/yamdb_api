@@ -56,3 +56,29 @@ class UserSerializerReadOnly(serializers.ModelSerializer):
             'role',
             'bio',
         )
+
+
+class SignupSerializer(serializers.ModelSerializer):
+    """Сериализатор полей пользователя при регистрации."""
+
+    class Meta:
+        model = User
+        fields = ('username', 'email',)
+
+    def validate_username(self, value):
+        if value == 'me':
+            raise serializers.ValidationError(
+                ('Нельзя использовать логин "me".'
+                 'Пожалуйста, придумайте иное имя пользователя.')
+            )
+        return value
+
+
+class CreateTokenSerializer(serializers.ModelSerializer):
+    """Сериализатор полей пользователя при получении access-токена."""
+
+    confirmation_code = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'confirmation_code')

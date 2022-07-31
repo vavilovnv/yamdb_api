@@ -1,26 +1,20 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
-
 from django.core.mail import send_mail
-
 from django.shortcuts import get_object_or_404
-
-from rest_framework import status, viewsets, filters
-from rest_framework.decorators import api_view, action, permission_classes
-from rest_framework.response import Response
+from rest_framework import filters, status, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated, AllowAny
-
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from reviews.models import Comment, Review, Category, Genre, Title
+from reviews.models import Category, Comment, Genre, Review, Title
 
 from .permissions import AdminPermission, IsAuthorOrReadOnly
-from .serializers import (CommentSerializer, ReviewSerializer,
-                          CategorySerializer, GenreSerializer,
-                          TitleSerializer, UserSerializer,
-                          UserSerializerReadOnly, SignupSerializer,
-                          CreateTokenSerializer)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          CreateTokenSerializer, GenreSerializer,
+                          ReviewSerializer, SignupSerializer, TitleSerializer,
+                          UserSerializer, UserSerializerReadOnly)
 
 User = get_user_model()
 
@@ -107,18 +101,6 @@ def send_email(username, email, code):
         fail_silently=False,
     )
 
-
-# эта функция нужна или нет?
-def response_400(fields, data):
-    """Возврат списка названий неправильных полей переданных в запросы."""
-
-    return Response(
-        {'field_name': list(filter(
-            lambda f: f not in data,
-            [field for field in fields]
-        ))},
-        status=status.HTTP_400_BAD_REQUEST
-    )
 
 @api_view(['POST'])
 @permission_classes([AllowAny])

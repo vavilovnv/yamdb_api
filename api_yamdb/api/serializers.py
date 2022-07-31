@@ -1,10 +1,8 @@
 from django.contrib.auth import get_user_model
-
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import ValidationError
-
-from reviews.models import Comment, Review, Category, Genre, Title
+from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
 
@@ -20,6 +18,7 @@ class CommentSerializer(serializers.ModelSerializer):
             'author',
             'pub_date'
         )
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
@@ -52,11 +51,13 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class TitleSerializer(serializers.ModelSerializer):
     category = SlugRelatedField(
-        slug_field='category',
+        slug_field='title',
+        # было slug_field='category',
         queryset=Category.objects.all()
     )
     genre = SlugRelatedField(
-        slug_field='genre',
+        slug_field='title',
+        # было slug_field='genre',
         queryset=Category.objects.all(),
         many=True
     )

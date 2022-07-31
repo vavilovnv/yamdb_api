@@ -17,8 +17,7 @@ from reviews.models import Comment, Review, Title
 
 from .permissions import AdminPermission
 from .serializers import (TitleSerializer, CommentSerializer, ReviewSerializer, UserSerializer,
-                          UserSerializerReadOnly, SignupSerializer,
-                          CreateTokenSerializer)
+                          UserSerializerReadOnly, SignupSerializer, CreateTokenSerializer)
 
 User = get_user_model()
 

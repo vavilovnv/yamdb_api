@@ -2,8 +2,9 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
+from rest_framework.validators import ValidationError
 
-from reviews.models import Comment, Review, Title
+from reviews.models import Comment, Review, Category, Genre, Title
 
 User = get_user_model()
 
@@ -25,11 +26,40 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
+        model = Category
+
+
+class GenreSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
+        model = Genre
+
+
 class TitleSerializer(serializers.ModelSerializer):
+    category = SlugRelatedField(
+        slug_field='category',
+        queryset=Category.objects.all()
+    )
+    genre = SlugRelatedField(
+        slug_field='genre',
+        queryset=Category.objects.all(),
+        many=True
+    )
 
     class Meta:
         model = Title
         fields = '__all__'
+
+    def validate(self, value):
+        """Проверяем присвоена ли категория произведению"""
+        if Title.objects.filter(category=value['category']).exists():
+            raise ValidationError('Произведению уже присвоена категория')
+        return value
 
 
 class UserSerializer(serializers.ModelSerializer):

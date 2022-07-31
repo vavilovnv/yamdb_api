@@ -13,11 +13,14 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from reviews.models import Comment, Review, Title
+from reviews.models import Comment, Review, Category, Genre, Title
 
 from .permissions import AdminPermission
-from .serializers import (TitleSerializer, CommentSerializer, ReviewSerializer, UserSerializer,
-                          UserSerializerReadOnly, SignupSerializer, CreateTokenSerializer)
+from .serializers import (CommentSerializer, ReviewSerializer,
+                          CategorySerializer, GenreSerializer,
+                          TitleSerializer, UserSerializer,
+                          UserSerializerReadOnly, SignupSerializer,
+                          CreateTokenSerializer)
 
 User = get_user_model()
 
@@ -36,6 +39,16 @@ class CommentViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class GenreViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
 
 
 class UsersViewSet(viewsets.ModelViewSet):

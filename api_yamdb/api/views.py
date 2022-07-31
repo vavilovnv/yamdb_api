@@ -25,6 +25,12 @@ from .serializers import (CommentSerializer, ReviewSerializer,
 User = get_user_model()
 
 
+class TitleViewSet(viewsets.ModelViewSet):
+
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+
+
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -45,13 +51,9 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = GenreSerializer
 
 
-class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
-    serializer_class = TitleSerializer
-
-
 class UsersViewSet(viewsets.ModelViewSet):
     """API для работы пользователями."""
+
     queryset = User.objects.all().order_by('username')
     serializer_class = UserSerializer
     permission_classes = (AdminPermission,)
@@ -125,7 +127,8 @@ def create_token(request):
     """Проверка кода подтверждения и возврат токена пользователю."""
 
     serializer = CreateTokenSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
+    if not serializer.is_valid(raise_exception=True):
+        return Response(status=status.HTTP_404_NOT_FOUND)
     username = serializer.data['username']
     confirmation_code = serializer.data['confirmation_code']
     user = get_object_or_404(User, username=username)
@@ -136,4 +139,4 @@ def create_token(request):
     if is_token_ok:
         token = RefreshToken.for_user(user).access_token
         return Response({'token': str(token)}, status=status.HTTP_200_OK)
-    return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -23,9 +23,10 @@ router_v1.register('titles/(?P<titles_id>\\d+)/reviews', ReviewViewSet,
 # http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/
 router_v1.register(
     'titles/(?P<titles_id>\\d+)/reviews/(?P<review_id>\\d+)/comments',
-    ReviewViewSet,
+    CommentViewSet,
     basename='reviews'
 )
+router_v1.register('titles', TitleViewSet)
 router_v1.register('users', UsersViewSet, basename='users')
 router_v1.register('categories', CategoryViewSet, basename='categories')
 router_v1.register('genres', GenreViewSet, basename='genres')

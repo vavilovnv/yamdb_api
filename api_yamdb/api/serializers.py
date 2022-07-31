@@ -11,7 +11,6 @@ User = get_user_model()
 
 class CommentSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
-    review = SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
         model = Comment
@@ -111,11 +110,8 @@ class SignupSerializer(serializers.ModelSerializer):
         return value
 
 
-class CreateTokenSerializer(serializers.ModelSerializer):
+class CreateTokenSerializer(serializers.Serializer):
     """Сериализатор полей пользователя при получении access-токена."""
 
+    username = serializers.CharField(required=True)
     confirmation_code = serializers.CharField(required=True)
-
-    class Meta:
-        model = User
-        fields = ('username', 'confirmation_code')

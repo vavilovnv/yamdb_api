@@ -2,7 +2,7 @@ from django.urls import include, path
 
 from rest_framework.routers import DefaultRouter
 
-from .views import ReviewViewSet, UsersViewSet, signup_user, create_token
+from .views import TitleViewSet, ReviewViewSet, CommentViewSet, UsersViewSet, signup_user, create_token
 
 
 router_v1 = DefaultRouter()
@@ -16,9 +16,10 @@ router_v1.register('titles/(?P<titles_id>\\d+)/reviews', ReviewViewSet,
 # http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/
 router_v1.register(
     'titles/(?P<titles_id>\\d+)/reviews/(?P<review_id>\\d+)/comments',
-    ReviewViewSet,
+    CommentViewSet,
     basename='reviews'
 )
+router_v1.register('titles', TitleViewSet)
 router_v1.register('users', UsersViewSet, basename='users')
 
 urlpatterns = [

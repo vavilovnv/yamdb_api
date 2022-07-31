@@ -3,9 +3,43 @@ from django.db import models
 from users.models import CustomUser
 
 
+class Category(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+
+    def __str__(self):
+        return self.title
+
+
+class Genre(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+
+    def __str__(self):
+        return self.title
+
+
 class Title(models.Model):
-    name = models.TextField(max_length=100)
-    # необходимо доопределить
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    rating = models.IntegerField(null=True, blank=True)
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        related_name='titles',
+        null=True,
+        blank=True
+    )
+    genre = models.ForeignKey(
+        Genre,
+        on_delete=models.SET_NULL,
+        related_name='titles',
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return self.name
 
 
 class Review(models.Model):

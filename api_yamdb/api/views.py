@@ -6,24 +6,33 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status, viewsets, filters
-from rest_framework.decorators import api_view, action
-
+from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from reviews.models import Comment, Review
+from reviews.models import Comment, Review, Category, Genre, Title
 
 from .permissions import AdminPermission, IsAuthorOrReadOnly
-from .serializers import (CommentSerializer, ReviewSerializer, UserSerializer,
-                          UserSerializerReadOnly)
+from .serializers import (CommentSerializer, ReviewSerializer,
+                          CategorySerializer, GenreSerializer,
+                          TitleSerializer, UserSerializer,
+                          UserSerializerReadOnly, SignupSerializer,
+                          CreateTokenSerializer)
 
 User = get_user_model()
 
 
+class TitleViewSet(viewsets.ModelViewSet):
+
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+
+
 class CommentViewSet(viewsets.ModelViewSet):
+    """API для работы с комментариями к отзывам."""
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
@@ -32,11 +41,22 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """API для работы с отзывами."""
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     pagination_class = PageNumberPagination
     permission_classes = (IsAuthorOrReadOnly,)
     ordering = ('-pub_date',)
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class GenreViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -80,7 +100,7 @@ def send_email(username, email, code):
         'Подтверждение регистрации на сайте yamdb.',
         (f'Для получения токена и подтверждения регистрации сделайте '
          f'post-запрос со следующими параметрами:\n'
-         f'username : {username}\n'
+         f'username: {username}\n'
          f'confirmation_code: {code}'),
         'noreply@api_yamdb.com',
         [email],
@@ -88,6 +108,7 @@ def send_email(username, email, code):
     )
 
 
+# эта функция нужна или нет?
 def response_400(fields, data):
     """Возврат списка названий неправильных полей переданных в запросы."""
 
@@ -99,43 +120,36 @@ def response_400(fields, data):
         status=status.HTTP_400_BAD_REQUEST
     )
 
-
-class CommentViewSet(viewsets.ModelViewSet):
-    """API для работы с комментариями к отзывам."""
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-
-
-class ReviewViewSet(viewsets.ModelViewSet):
-    """API для работы с отзывами."""
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-
-
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def signup_user(request):
     """Регистрация кода подтверждения для пользователя."""
 
-    fields = ('username', 'email')
-    if not all([f in request.data for f in fields]):
-        return response_400(fields, request.data)
-    username = request.data.get('username')
-    email = request.data.get('email')
-    user = get_object_or_404(User, username=username)
+    serializer = SignupSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    email = serializer.data['email']
+    username = serializer.data['username']
+    user, created = User.objects.get_or_create(
+        username=username,
+        email=email,
+    )
     confirmation_code = default_token_generator.make_token(user)
     send_email(username, email, confirmation_code)
-    return Response({'email': email}, status=status.HTTP_200_OK)
+    return Response(
+        {'email': email, 'username': username},
+        status=status.HTTP_200_OK
+    )
 
 
 @api_view(['POST'])
 def create_token(request):
     """Проверка кода подтверждения и возврат токена пользователю."""
 
-    fields = ('username', 'confirmation_code')
-    if not all([f in request.data for f in fields]):
-        return response_400(request.data)
-    username = request.data.get('username')
-    confirmation_code = request.data.get('confirmation_code')
+    serializer = CreateTokenSerializer(data=request.data)
+    if not serializer.is_valid(raise_exception=True):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    username = serializer.data['username']
+    confirmation_code = serializer.data['confirmation_code']
     user = get_object_or_404(User, username=username)
     is_token_ok = default_token_generator.check_token(
         user=user,
@@ -144,4 +158,4 @@ def create_token(request):
     if is_token_ok:
         token = RefreshToken.for_user(user).access_token
         return Response({'token': str(token)}, status=status.HTTP_200_OK)
-    return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(status=status.HTTP_400_BAD_REQUEST)

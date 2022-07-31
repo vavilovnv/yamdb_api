@@ -3,19 +3,17 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
-from reviews.models import Comment, Review
+from reviews.models import Comment, Review, Title
 
 User = get_user_model()
 
 
 class CommentSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
-    review = SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
         model = Comment
         fields = '__all__'
-
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -24,6 +22,13 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
+        fields = '__all__'
+
+
+class TitleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Title
         fields = '__all__'
 
 
@@ -75,11 +80,8 @@ class SignupSerializer(serializers.ModelSerializer):
         return value
 
 
-class CreateTokenSerializer(serializers.ModelSerializer):
+class CreateTokenSerializer(serializers.Serializer):
     """Сериализатор полей пользователя при получении access-токена."""
 
+    username = serializers.CharField(required=True)
     confirmation_code = serializers.CharField(required=True)
-
-    class Meta:
-        model = User
-        fields = ('username', 'confirmation_code')

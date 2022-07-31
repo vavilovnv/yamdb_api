@@ -16,7 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from reviews.models import Comment, Review
 
-from .permissions import AdminPermission
+from .permissions import AdminPermission, IsAuthorOrReadOnly
 from .serializers import (CommentSerializer, ReviewSerializer, UserSerializer,
                           UserSerializerReadOnly)
 
@@ -26,17 +26,21 @@ User = get_user_model()
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    pagination_class = PageNumberPagination
+    permission_classes = (IsAuthorOrReadOnly,)
+    ordering = ('-pub_date',)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    pagination_class = PageNumberPagination
+    permission_classes = (IsAuthorOrReadOnly,)
+    ordering = ('-pub_date',)
 
 
 class UsersViewSet(viewsets.ModelViewSet):
     """API для работы пользователями."""
-
-
     queryset = User.objects.all().order_by('username')
     serializer_class = UserSerializer
     permission_classes = (AdminPermission,)
@@ -97,11 +101,13 @@ def response_400(fields, data):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """API для работы с комментариями к отзывам."""
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """API для работы с отзывами."""
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 

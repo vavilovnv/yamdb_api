@@ -4,7 +4,7 @@ from users.models import CustomUser
 
 
 class Category(models.Model):
-    title = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
     def __str__(self):
@@ -12,24 +12,24 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    title = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class Title(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     rating = models.IntegerField(null=True, blank=True)
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.SET_NULL,
-        related_name='titles',
-        null=True,
-        blank=True
-    )
+    # category = models.ForeignKey(
+    #     Category,
+    #     on_delete=models.SET_NULL,
+    #     related_name='titles',
+    #     null=True,
+    #     blank=True
+    # )
     genre = models.ForeignKey(
         Genre,
         on_delete=models.SET_NULL,
@@ -37,6 +37,7 @@ class Title(models.Model):
         null=True,
         blank=True
     )
+    year = models.SmallIntegerField()
 
     def __str__(self):
         return self.name

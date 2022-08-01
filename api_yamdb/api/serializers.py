@@ -41,13 +41,13 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    category = SlugRelatedField(
-        slug_field='category',
-        queryset=Category.objects.all()
-    )
+    # category = SlugRelatedField(
+    #     slug_field='category',
+    #     queryset=Category.objects.all()
+    # )
     genre = SlugRelatedField(
         slug_field='genre',
-        queryset=Category.objects.all(),
+        queryset=Genre.objects.all(),
         many=True
     )
 
@@ -55,11 +55,11 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
         fields = '__all__'
 
-    def validate(self, value):
-        """Проверяем присвоена ли категория произведению"""
-        if Title.objects.filter(category=value['category']).exists():
-            raise ValidationError('Произведению уже присвоена категория')
-        return value
+    # def validate(self, value):
+    #     """Проверяем присвоена ли категория произведению"""
+    #     if Title.objects.filter(category=value['category']).exists():
+    #         raise ValidationError('Произведению уже присвоена категория')
+    #     return value
 
 
 class UserSerializer(serializers.ModelSerializer):

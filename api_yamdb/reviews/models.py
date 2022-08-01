@@ -4,7 +4,7 @@ from users.models import CustomUser
 
 
 class Category(models.Model):
-    title = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
     def __str__(self):
@@ -12,11 +12,11 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    title = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class Title(models.Model):
@@ -37,6 +37,7 @@ class Title(models.Model):
         null=True,
         blank=True
     )
+    year = models.SmallIntegerField()
 
     def __str__(self):
         return self.name

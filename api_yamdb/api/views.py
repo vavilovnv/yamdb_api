@@ -23,6 +23,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+    pagination_class = PageNumberPagination
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -53,9 +54,20 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = GenreSerializer
 
 
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class GenreViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+
+
 class UsersViewSet(viewsets.ModelViewSet):
     """API для работы пользователями."""
-    queryset = User.objects.all().order_by('username')
+
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (AdminPermission,)
     pagination_class = PageNumberPagination

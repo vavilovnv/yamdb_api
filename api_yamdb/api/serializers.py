@@ -1,10 +1,9 @@
 from django.contrib.auth import get_user_model
-
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import ValidationError
 
-from reviews.models import Comment, Review, Category, Genre, Title
+from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
 
@@ -14,16 +13,41 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = '__all__'
+        fields = (
+            'id',
+            'text',
+            'author',
+            'pub_date'
+        )
 
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
-    title = SlugRelatedField(slug_field='name', read_only=True)
+    # title = SlugRelatedField(slug_field='name', read_only=True)
 
     class Meta:
         model = Review
+        fields = (
+            'id',
+            'text',
+            'author',
+            'score',
+            'pub_date',
+        )
+
+
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
         fields = '__all__'
+        model = Category
+
+
+class GenreSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
+        model = Genre
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -41,13 +65,16 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    # category = SlugRelatedField(
-    #     slug_field='category',
-    #     queryset=Category.objects.all()
-    # )
+
+    category = SlugRelatedField(
+        slug_field='title',
+        # было slug_field='category',
+        queryset=Category.objects.all()
+    )
     genre = SlugRelatedField(
-        slug_field='genre',
-        queryset=Genre.objects.all(),
+        slug_field='title',
+        # было slug_field='genre',
+        queryset=Category.objects.all(),
         many=True
     )
 
@@ -55,11 +82,11 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
         fields = '__all__'
 
-    # def validate(self, value):
-    #     """Проверяем присвоена ли категория произведению"""
-    #     if Title.objects.filter(category=value['category']).exists():
-    #         raise ValidationError('Произведению уже присвоена категория')
-    #     return value
+    def validate(self, value):
+        """Проверяем присвоена ли категория произведению"""
+        if Title.objects.filter(category=value['category']).exists():
+            raise ValidationError('Произведению уже присвоена категория')
+        return value
 
 
 class UserSerializer(serializers.ModelSerializer):

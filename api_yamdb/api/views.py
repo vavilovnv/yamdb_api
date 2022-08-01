@@ -1,26 +1,20 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
-
 from django.core.mail import send_mail
-
 from django.shortcuts import get_object_or_404
-
-from rest_framework import status, viewsets, filters
-from rest_framework.decorators import api_view, action, permission_classes
-from rest_framework.response import Response
+from rest_framework import filters, status, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated, AllowAny
-
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from reviews.models import Category, Comment, Genre, Review, Title
 
-from reviews.models import Comment, Review, Category, Genre, Title
-
-from .permissions import AdminPermission
-from .serializers import (CommentSerializer, ReviewSerializer,
-                          CategorySerializer, GenreSerializer,
-                          TitleSerializer, UserSerializer,
-                          UserSerializerReadOnly, SignupSerializer,
-                          CreateTokenSerializer)
+from .permissions import AdminPermission, IsAuthorOrReadOnly
+from .serializers import (CategorySerializer, CommentSerializer,
+                          CreateTokenSerializer, GenreSerializer,
+                          ReviewSerializer, SignupSerializer, TitleSerializer,
+                          UserSerializer, UserSerializerReadOnly)
 
 User = get_user_model()
 
@@ -33,13 +27,31 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """API для работы с комментариями к отзывам."""
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    pagination_class = PageNumberPagination
+    permission_classes = (IsAuthorOrReadOnly,)
+    ordering = ('-pub_date',)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """API для работы с отзывами."""
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    pagination_class = PageNumberPagination
+    permission_classes = (IsAuthorOrReadOnly,)
+    ordering = ('-pub_date',)
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class GenreViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

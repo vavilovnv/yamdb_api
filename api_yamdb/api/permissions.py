@@ -14,3 +14,12 @@ class AdminPermission(permissions.BasePermission):
         if (request.user.is_authenticated
                 and request.user.role == ROLE_ADMIN):
             return True
+
+
+class IsAuthorOrReadOnly(permissions.BasePermission):
+    """Права доступа к записям: автору записи всё, остальным чтение."""
+    message = 'Разрешено изменять только собственные записи!'
+
+    def has_object_permission(self, request, view, obj):
+        return (request.method in permissions.SAFE_METHODS
+                or obj.author == request.user)

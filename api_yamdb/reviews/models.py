@@ -21,7 +21,7 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(max_length=200)
-    description = models.TextField()
+    description = models.TextField(default='dummy')
     rating = models.IntegerField(null=True, blank=True)
     category = models.ForeignKey(
         Category,

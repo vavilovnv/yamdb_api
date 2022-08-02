@@ -1,19 +1,19 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+ROLE_USER = 'user'
+ROLE_ADMIN = 'admin'
+ROLE_MODERATOR = 'moderator'
+
+ROLE_CHOICES = (
+    (ROLE_USER, 'Пользователь'),
+    (ROLE_MODERATOR, 'Модератор'),
+    (ROLE_ADMIN, 'Администратор'),
+)
+
 
 class CustomUser(AbstractUser):
     """Описание полей модели CustomUser наследуемой от AbstractUser."""
-
-    ROLE_USER = 'user'
-    ROLE_ADMIN = 'admin'
-    ROLE_MODERATOR = 'moderator'
-
-    ROLE_CHOICES = (
-        (ROLE_USER, 'Пользователь'),
-        (ROLE_MODERATOR, 'Модератор'),
-        (ROLE_ADMIN, 'Администратор'),
-    )
 
     username = models.CharField(
         max_length=150,
@@ -47,6 +47,18 @@ class CustomUser(AbstractUser):
         default=ROLE_USER,
         verbose_name='Роль'
     )
+
+    @property
+    def is_user(self):
+        return self.role == ROLE_USER
+
+    @property
+    def is_admin(self):
+        return self.role == ROLE_ADMIN
+
+    @property
+    def is_moderator(self):
+        return self.role == ROLE_MODERATOR
 
     class Meta:
         verbose_name = 'Пользователь'

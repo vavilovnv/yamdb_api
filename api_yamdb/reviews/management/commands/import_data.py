@@ -41,14 +41,29 @@ class Command(BaseCommand):
                         correct_row = []
                         for key, value in row.items():
                             if key == 'category':
-                                continue
-                                # correct_row.append({key: Category.objects.filter(id=value).first()})
+                                correct_row.append(
+                                    (key,
+                                     Category.objects.filter(id=value).first()
+                                     )
+                                )
                             if key == 'genre':
-                                correct_row.append((key, Genre.objects.filter(id=value).first()))
+                                correct_row.append(
+                                    (key,
+                                     Genre.objects.filter(id=value).first()
+                                     )
+                                )
                             elif key == 'title_id':
-                                correct_row.append(('title', Title.objects.filter(id=value).first()))
+                                correct_row.append(
+                                    ('title',
+                                     Title.objects.filter(id=value).first()
+                                     )
+                                )
                             elif key == 'author':
-                                correct_row.append((key, User.objects.filter(id=value).first()))
+                                correct_row.append(
+                                    (key,
+                                     User.objects.filter(id=value).first()
+                                     )
+                                )
                             else:
                                 correct_row.append((key, value))
                         model.objects.create(**OrderedDict(correct_row))

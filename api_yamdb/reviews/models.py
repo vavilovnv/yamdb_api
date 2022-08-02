@@ -4,25 +4,33 @@ from users.models import CustomUser
 
 
 class Category(models.Model):
+
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class Genre(models.Model):
+
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return self.name
 
 
 class Title(models.Model):
+
     name = models.CharField(max_length=200)
-    description = models.TextField(default='dummy')
-    rating = models.IntegerField(null=True, blank=True)
+    description = models.TextField(null=True)
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -30,20 +38,18 @@ class Title(models.Model):
         null=True,
         blank=True
     )
-    genre = models.ForeignKey(
+    genre = models.ManyToManyField(
         Genre,
-        on_delete=models.SET_NULL,
-        related_name='titles',
-        null=True,
-        blank=True
+        related_name='titles'
     )
-    year = models.SmallIntegerField()
+    year = models.IntegerField()
 
     def __str__(self):
         return self.name
 
 
 class Review(models.Model):
+
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField()
@@ -52,6 +58,15 @@ class Review(models.Model):
     score = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)])
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
+
+    class Meta:
+        ordering = ['-pub_date']
+        constraints = [
+            models.UniqueConstraint(
+                fields=('author', 'title'),
+                name='unique_author_title'
+            )
+        ]
 
     def __str__(self):
         return self.text
@@ -64,6 +79,9 @@ class Comment(models.Model):
     author = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name='comments')
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
+
+    class Meta:
+        ordering = ['-pub_date']
 
     def __str__(self):
         return self.text

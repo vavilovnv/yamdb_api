@@ -9,13 +9,16 @@ router_v1 = DefaultRouter()
 
 # http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/
 # http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/
-router_v1.register('titles/(?P<titles_id>\\d+)/reviews', ReviewViewSet,
-                   basename='reviews')
+router_v1.register(
+    'titles/(?P<title_id>\\d+)/reviews',
+    ReviewViewSet,
+    basename='reviews'
+)
 
 # http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/
 # http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/
 router_v1.register(
-    'titles/(?P<titles_id>\\d+)/reviews/(?P<review_id>\\d+)/comments',
+    'titles/(?P<title_id>\\d+)/reviews/(?P<review_id>\\d+)/comments',
     CommentViewSet,
     basename='reviews'
 )

@@ -1,16 +1,43 @@
 from django.urls import include, path
 
 from rest_framework.routers import DefaultRouter
-from rest_framework.authtoken import views
 
-from .views import CategoryViewSet, GenreViewSet, TitleViewSet
+from .views import (
+    ReviewViewSet,
+    CommentViewSet,
+    UsersViewSet,
+    CategoryList,
+    CategoryDetail,
+    GenreList,
+    GenreDetail,
+    TitleViewSet,
+    signup_user,
+    create_token
+)
 
-router = DefaultRouter()
-router.register('categories', CategoryViewSet, basename='categories')
-router.register('genres', GenreViewSet, basename='genres')
-router.register('titles', TitleViewSet, basename='titles')
+router_v1 = DefaultRouter()
+
+# http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/
+# http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/
+router_v1.register('titles/(?P<titles_id>\\d+)/reviews', ReviewViewSet,
+                   basename='reviews')
+
+# http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/
+# http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/
+router_v1.register(
+    'titles/(?P<titles_id>\\d+)/reviews/(?P<review_id>\\d+)/comments',
+    CommentViewSet,
+    basename='reviews'
+)
+router_v1.register('users', UsersViewSet, basename='users')
+router_v1.register('titles', TitleViewSet, basename='titles')
 
 urlpatterns = [
-    path('v1/', include(router.urls)),
-    path('v1/api-token-auth/', views.obtain_auth_token),
+    path('v1/auth/signup/', signup_user, name='signup'),
+    path('v1/auth/token/', create_token, name='token'),
+    path('v1/', include(router_v1.urls)),
+    path('v1/categories/', CategoryList.as_view()),
+    path('v1/categories/<slug:slug>/', CategoryDetail.as_view()),
+    path('v1/genres/', GenreList.as_view()),
+    path('v1/genres/<slug:slug>/', GenreDetail.as_view()),
 ]

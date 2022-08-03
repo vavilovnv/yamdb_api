@@ -104,16 +104,6 @@ class GenreViewSet(ModelMixinSet):
     lookup_field = 'slug'
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-
-
-class GenreViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-
-
 class UsersViewSet(viewsets.ModelViewSet):
     """API для работы пользователями."""
 

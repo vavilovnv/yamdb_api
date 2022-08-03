@@ -64,6 +64,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    """API для произведений."""
 
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
@@ -80,6 +81,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(ModelMixinSet):
+    """API для категорий."""
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -91,6 +93,7 @@ class CategoryViewSet(ModelMixinSet):
 
 
 class GenreViewSet(ModelMixinSet):
+    """API для жанров."""
 
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
@@ -99,16 +102,6 @@ class GenreViewSet(ModelMixinSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ('name', )
     lookup_field = 'slug'
-
-
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-
-
-class GenreViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
 
 
 class UsersViewSet(viewsets.ModelViewSet):

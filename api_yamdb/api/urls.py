@@ -28,8 +28,12 @@ router_v1.register('categories', CategoryViewSet, basename='categories')
 router_v1.register('genres', GenreViewSet, basename='genres')
 router_v1.register('titles', TitleViewSet, basename='titles')
 
+auth_urlpatterns = [
+    path('signup/', signup_user, name='signup'),
+    path('token/', create_token, name='token'),
+]
+
 urlpatterns = [
-    path('v1/auth/signup/', signup_user, name='signup'),
-    path('v1/auth/token/', create_token, name='token'),
+    path('v1/auth/', include(auth_urlpatterns)),
     path('v1/', include(router_v1.urls)),
 ]

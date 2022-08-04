@@ -9,3 +9,4 @@ pytest-pythonpath==0.7.3
 djangorestframework-simplejwt==4.7.2
 django-filter==21.1
 isort==5.10.1
+python-dotenv==0.20.0

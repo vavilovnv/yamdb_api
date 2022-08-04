@@ -132,13 +132,10 @@ class UsersViewSet(viewsets.ModelViewSet):
                 data=request.data,
                 partial=True
             )
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 def send_email(username, email, code):
@@ -166,7 +163,7 @@ def signup_user(request):
     serializer.is_valid(raise_exception=True)
     email = serializer.data['email']
     username = serializer.data['username']
-    user, created = User.objects.get_or_create(
+    user, _ = User.objects.get_or_create(
         username=username,
         email=email,
     )
